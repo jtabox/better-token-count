@@ -7,6 +7,7 @@ import {
   getCitationCount,
   getFootnoteCount,
   getPageCount,
+  getTokenCount,
   cleanComments,
 } from "src/utils/StatUtils";
 import { debounce } from "obsidian";
@@ -199,6 +200,26 @@ export default class StatusBar {
                 : 0);
             break;
         }
+      } else if (metric.counter === MetricCounter.tokens) {
+        switch (metric.type) {
+          case MetricType.file:
+            display = display + getTokenCount(text, this.plugin.settings.tokenizerType);
+            break;
+          case MetricType.daily:
+            display =
+              display +
+              (this.plugin.settings.collectStats
+                ? this.plugin.statsManager.getDailyTokens()
+                : 0);
+            break;
+          case MetricType.total:
+            display =
+              display +
+              (await (this.plugin.settings.collectStats
+                ? this.plugin.statsManager.getTotalTokens()
+                : 0));
+            break;
+        }
       }
 
       display = display + sbItem.suffix;
@@ -359,6 +380,26 @@ export default class StatusBar {
               (this.plugin.settings.collectStats
                 ? this.plugin.statsManager.getTotalFiles()
                 : 0);
+            break;
+        }
+      } else if (metric.counter === MetricCounter.tokens) {
+        switch (metric.type) {
+          case MetricType.file:
+            display = display + 0;
+            break;
+          case MetricType.daily:
+            display =
+              display +
+              (this.plugin.settings.collectStats
+                ? this.plugin.statsManager.getDailyTokens()
+                : 0);
+            break;
+          case MetricType.total:
+            display =
+              display +
+              (await (this.plugin.settings.collectStats
+                ? this.plugin.statsManager.getTotalTokens()
+                : 0));
             break;
         }
       }

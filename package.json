@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "chart.js": "^4.3.0",
+    "gpt-tokenizer": "^3.4.0",
     "svelte": "^3.38.3",
     "svelte-icons": "^2.1.0"
   }

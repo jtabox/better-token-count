@@ -1,5 +1,10 @@
 import type { Vault } from "obsidian";
 import { MATCH_HTML_COMMENT, MATCH_COMMENT } from "src/constants";
+import { TokenizerType } from "src/settings/Settings";
+import {
+  encodingForModel,
+  type TiktokenModel,
+} from "gpt-tokenizer/model";
 
 export function getWordCount(text: string): number {
   const spaceDelimitedChars =
@@ -64,4 +69,44 @@ export function getTotalFileCount(vault: Vault): number {
 
 export function cleanComments(text: string): string {
   return text.replace(MATCH_COMMENT, "").replace(MATCH_HTML_COMMENT, "");
+}
+
+export function getTokenCount(text: string, tokenizerType: TokenizerType): number {
+  try {
+    // Map tokenizer type to model encoding
+    let encoding;
+    
+    switch (tokenizerType) {
+      case TokenizerType.cl100k_base:
+        // Used by GPT-4, GPT-3.5-turbo, text-embedding-ada-002
+        encoding = encodingForModel("gpt-4" as TiktokenModel);
+        break;
+      case TokenizerType.p50k_base:
+        // Used by Codex models, text-davinci-002, text-davinci-003
+        encoding = encodingForModel("text-davinci-003" as TiktokenModel);
+        break;
+      case TokenizerType.r50k_base:
+        // Used by GPT-3 models like davinci
+        encoding = encodingForModel("davinci" as TiktokenModel);
+        break;
+      case TokenizerType.p50k_edit:
+        // Used by edit models
+        encoding = encodingForModel("text-davinci-edit-001" as TiktokenModel);
+        break;
+      case TokenizerType.gpt2:
+        // Used by GPT-2 models
+        encoding = encodingForModel("gpt2" as TiktokenModel);
+        break;
+      default:
+        // Default to cl100k_base (most modern models)
+        encoding = encodingForModel("gpt-4" as TiktokenModel);
+    }
+    
+    const tokens = encoding.encode(text);
+    return tokens.length;
+  } catch (error) {
+    console.error("Error counting tokens:", error);
+    // Return 0 on error to avoid breaking the UI
+    return 0;
+  }
 }

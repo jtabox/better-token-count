@@ -9,6 +9,7 @@ import {
   getWordCount,
   getCitationCount,
   getFootnoteCount,
+  getTokenCount,
   cleanComments,
 } from "../utils/StatUtils";
 
@@ -85,6 +86,7 @@ export default class StatsManager {
     const totalFootnotes = await this.calcTotalFootnotes();
     const totalCitations = await this.calcTotalCitations();
     const totalPages = await this.calcTotalPages();
+    const totalTokens = await this.calcTotalTokens();
 
     const newDay: Day = {
       words: 0,
@@ -94,12 +96,14 @@ export default class StatsManager {
       files: 0,
       footnotes: 0,
       citations: 0,
+      tokens: 0,
       totalWords: totalWords,
       totalCharacters: totalCharacters,
       totalSentences: totalSentences,
       totalFootnotes: totalFootnotes,
       totalCitations: totalCitations,
       totalPages: totalPages,
+      totalTokens: totalTokens,
     };
 
     this.vaultStats.modifiedFiles = {};
@@ -118,6 +122,7 @@ export default class StatsManager {
     const currentCitations = getCitationCount(text);
     const currentFootnotes = getFootnoteCount(text);
     const currentPages = getPageCount(text, this.plugin.settings.pageWords);
+    const currentTokens = getTokenCount(text, this.plugin.settings.tokenizerType);
 
     if (
       this.vaultStats.history.hasOwnProperty(this.today) &&
@@ -138,6 +143,8 @@ export default class StatsManager {
           currentSentences - modFiles[fileName].citations.current;
         this.vaultStats.history[this.today].totalPages +=
           currentPages - modFiles[fileName].pages.current;
+        this.vaultStats.history[this.today].totalTokens +=
+          currentTokens - modFiles[fileName].tokens.current;
 
         modFiles[fileName].words.current = currentWords;
         modFiles[fileName].characters.current = currentCharacters;
@@ -145,6 +152,7 @@ export default class StatsManager {
         modFiles[fileName].footnotes.current = currentFootnotes;
         modFiles[fileName].citations.current = currentCitations;
         modFiles[fileName].pages.current = currentPages;
+        modFiles[fileName].tokens.current = currentTokens;
       } else {
         modFiles[fileName] = {
           words: {
@@ -170,6 +178,10 @@ export default class StatsManager {
           pages: {
             initial: currentPages,
             current: currentPages,
+          },
+          tokens: {
+            initial: currentTokens,
+            current: currentTokens,
           },
         };
       }
@@ -205,12 +217,19 @@ export default class StatsManager {
         )
         .reduce((a, b) => a + b, 0);
 
+      const tokens = Object.values(modFiles)
+        .map((counts) =>
+          Math.max(0, counts.tokens.current - counts.tokens.initial)
+        )
+        .reduce((a, b) => a + b, 0);
+
       this.vaultStats.history[this.today].words = words;
       this.vaultStats.history[this.today].characters = characters;
       this.vaultStats.history[this.today].sentences = sentences;
       this.vaultStats.history[this.today].footnotes = footnotes;
       this.vaultStats.history[this.today].citations = citations;
       this.vaultStats.history[this.today].pages = pages;
+      this.vaultStats.history[this.today].tokens = tokens;
       this.vaultStats.history[this.today].files = this.getTotalFiles();
 
       await this.update();
@@ -232,6 +251,7 @@ export default class StatsManager {
       todayHist.totalFootnotes = await this.calcTotalFootnotes();
       todayHist.totalCitations = await this.calcTotalCitations();
       todayHist.totalPages = await this.calcTotalPages();
+      todayHist.totalTokens = await this.calcTotalTokens();
       this.update();
     } else {
       this.updateToday();
@@ -314,6 +334,18 @@ export default class StatsManager {
     return citations;
   }
 
+  private async calcTotalTokens(): Promise<number> {
+    let tokens = 0;
+    const files = this.vault.getFiles();
+    for (const i in files) {
+      const file = files[i];
+      if (file.extension === "md") {
+        tokens += getTokenCount(await this.vault.cachedRead(file), this.plugin.settings.tokenizerType);
+      }
+    }
+    return tokens;
+  }
+
   public getDailyWords(): number {
     return this.vaultStats.history[this.today].words;
   }
@@ -335,6 +367,10 @@ export default class StatsManager {
   }
   public getDailyPages(): number {
     return this.vaultStats.history[this.today].pages;
+  }
+
+  public getDailyTokens(): number {
+    return this.vaultStats.history[this.today].tokens;
   }
 
   public getTotalFiles(): number {
@@ -369,5 +405,10 @@ export default class StatsManager {
   public async getTotalPages(): Promise<number> {
     if (!this.vaultStats) return await this.calcTotalPages();
     return this.vaultStats.history[this.today].totalPages;
+  }
+
+  public async getTotalTokens(): Promise<number> {
+    if (!this.vaultStats) return await this.calcTotalTokens();
+    return this.vaultStats.history[this.today].totalTokens;
   }
 }

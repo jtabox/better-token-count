@@ -6,6 +6,15 @@ export enum MetricCounter {
   citations,
   pages,
   files,
+  tokens,
+}
+
+export enum TokenizerType {
+  cl100k_base = "cl100k_base", // GPT-4, GPT-3.5-turbo, text-embedding-ada-002
+  p50k_base = "p50k_base", // Codex models, text-davinci-002, text-davinci-003
+  r50k_base = "r50k_base", // GPT-3 models like davinci
+  p50k_edit = "p50k_edit", // Edit models like text-davinci-edit-001
+  gpt2 = "gpt2", // GPT-2 models
 }
 
 export enum MetricType {
@@ -44,6 +53,7 @@ export interface BetterWordCountSettings {
   pageWords: number;
   displaySectionCounts: boolean;
   statsPath: string;
+  tokenizerType: TokenizerType;
 }
 
 export const DEFAULT_SETTINGS: BetterWordCountSettings = {
@@ -80,4 +90,5 @@ export const DEFAULT_SETTINGS: BetterWordCountSettings = {
   displaySectionCounts: false,
   pageWords: 300,
   statsPath: ".obsidian/vault-stats.json",
+  tokenizerType: TokenizerType.cl100k_base,
 };
