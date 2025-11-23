@@ -3,7 +3,8 @@ import { MATCH_HTML_COMMENT, MATCH_COMMENT } from "src/constants";
 import { TokenizerType } from "src/settings/Settings";
 import { encode as gptEncode } from "gpt-tokenizer";
 import llamaTokenizer from "llama-tokenizer-js";
-import { fromPreTrained } from "@lenml/tokenizer-claude";
+import { fromPreTrained, type TokenizerClassNameMapping } from "@lenml/tokenizer-claude";
+import type { FromPreTrainedFn } from "@lenml/tokenizers";
 
 export function getWordCount(text: string): number {
   const spaceDelimitedChars =
@@ -71,7 +72,7 @@ export function cleanComments(text: string): string {
 }
 
 // Cache for Claude tokenizer (initialized lazily)
-let claudeTokenizer: any = null;
+let claudeTokenizer: ReturnType<typeof fromPreTrained> | null = null;
 
 export function getTokenCount(text: string, tokenizerType: TokenizerType): number {
   try {
@@ -100,8 +101,14 @@ export function getTokenCount(text: string, tokenizerType: TokenizerType): numbe
         break;
       case TokenizerType.claude:
         // Claude 1, 2, 3, 3.5 models
+        // Note: fromPreTrained() is synchronous and returns pre-bundled tokenizer data
         if (!claudeTokenizer) {
-          claudeTokenizer = fromPreTrained();
+          try {
+            claudeTokenizer = fromPreTrained();
+          } catch (initError) {
+            console.error("Failed to initialize Claude tokenizer:", initError);
+            throw initError;
+          }
         }
         tokens = claudeTokenizer.encode(text, null, { add_special_tokens: false });
         break;

@@ -385,6 +385,7 @@ export default class StatusBar {
       } else if (metric.counter === MetricCounter.tokens) {
         switch (metric.type) {
           case MetricType.file:
+            // Alt bar is shown when not viewing a file, so file-level token count is 0
             display = display + 0;
             break;
           case MetricType.daily:
