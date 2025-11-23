@@ -10,11 +10,14 @@ export enum MetricCounter {
 }
 
 export enum TokenizerType {
-  cl100k_base = "cl100k_base", // GPT-4, GPT-3.5-turbo, text-embedding-ada-002
-  p50k_base = "p50k_base", // Codex models, text-davinci-002, text-davinci-003
+  // OpenAI models
+  cl100k_base = "cl100k_base", // GPT-4, GPT-3.5-turbo, GPT-4o
+  p50k_base = "p50k_base", // Codex, text-davinci-002, text-davinci-003
   r50k_base = "r50k_base", // GPT-3 models like davinci
-  p50k_edit = "p50k_edit", // Edit models like text-davinci-edit-001
   gpt2 = "gpt2", // GPT-2 models
+  // Open source models
+  llama = "llama", // Llama 1, 2, 3
+  claude = "claude", // Claude 1, 2, 3, 3.5
 }
 
 export enum MetricType {

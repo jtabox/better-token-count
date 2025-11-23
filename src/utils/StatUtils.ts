@@ -1,10 +1,9 @@
 import type { Vault } from "obsidian";
 import { MATCH_HTML_COMMENT, MATCH_COMMENT } from "src/constants";
 import { TokenizerType } from "src/settings/Settings";
-import {
-  encodingForModel,
-  type TiktokenModel,
-} from "gpt-tokenizer/model";
+import { encode as gptEncode } from "gpt-tokenizer";
+import llamaTokenizer from "llama-tokenizer-js";
+import { fromPreTrained } from "@lenml/tokenizer-claude";
 
 export function getWordCount(text: string): number {
   const spaceDelimitedChars =
@@ -71,38 +70,46 @@ export function cleanComments(text: string): string {
   return text.replace(MATCH_COMMENT, "").replace(MATCH_HTML_COMMENT, "");
 }
 
+// Cache for Claude tokenizer (initialized lazily)
+let claudeTokenizer: any = null;
+
 export function getTokenCount(text: string, tokenizerType: TokenizerType): number {
   try {
-    // Map tokenizer type to model encoding
-    let encoding;
+    let tokens: number[] = [];
     
     switch (tokenizerType) {
       case TokenizerType.cl100k_base:
-        // Used by GPT-4, GPT-3.5-turbo, text-embedding-ada-002
-        encoding = encodingForModel("gpt-4" as TiktokenModel);
+        // GPT-4, GPT-3.5-turbo, GPT-4o, text-embedding-ada-002
+        tokens = gptEncode(text, "gpt-4o");
         break;
       case TokenizerType.p50k_base:
-        // Used by Codex models, text-davinci-002, text-davinci-003
-        encoding = encodingForModel("text-davinci-003" as TiktokenModel);
+        // Codex models, text-davinci-002, text-davinci-003
+        tokens = gptEncode(text, "text-davinci-003");
         break;
       case TokenizerType.r50k_base:
-        // Used by GPT-3 models like davinci
-        encoding = encodingForModel("davinci" as TiktokenModel);
-        break;
-      case TokenizerType.p50k_edit:
-        // Used by edit models
-        encoding = encodingForModel("text-davinci-edit-001" as TiktokenModel);
+        // GPT-3 models like davinci
+        tokens = gptEncode(text, "davinci");
         break;
       case TokenizerType.gpt2:
-        // Used by GPT-2 models
-        encoding = encodingForModel("gpt2" as TiktokenModel);
+        // GPT-2 models
+        tokens = gptEncode(text, "gpt2");
+        break;
+      case TokenizerType.llama:
+        // Llama 1, 2, 3 and other similar models
+        tokens = llamaTokenizer.encode(text);
+        break;
+      case TokenizerType.claude:
+        // Claude 1, 2, 3, 3.5 models
+        if (!claudeTokenizer) {
+          claudeTokenizer = fromPreTrained();
+        }
+        tokens = claudeTokenizer.encode(text, null, { add_special_tokens: false });
         break;
       default:
-        // Default to cl100k_base (most modern models)
-        encoding = encodingForModel("gpt-4" as TiktokenModel);
+        // Default to cl100k_base (GPT-4)
+        tokens = gptEncode(text, "gpt-4o");
     }
     
-    const tokens = encoding.encode(text);
     return tokens.length;
   } catch (error) {
     console.error("Error counting tokens:", error);

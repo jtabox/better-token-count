@@ -68,14 +68,15 @@ export default class BetterWordCountSettingsTab extends PluginSettingTab {
       });
     new Setting(containerEl)
       .setName("Tokenizer Type")
-      .setDesc("Select the tokenizer to use for token counting. cl100k_base is used by GPT-4 and GPT-3.5-turbo.")
+      .setDesc("Select the tokenizer to use for token counting. Choose the tokenizer that matches your target LLM.")
       .addDropdown((dropdown) => {
         dropdown
-          .addOption(TokenizerType.cl100k_base, "cl100k_base (GPT-4, GPT-3.5-turbo)")
-          .addOption(TokenizerType.p50k_base, "p50k_base (Codex, text-davinci-002/003)")
-          .addOption(TokenizerType.r50k_base, "r50k_base (GPT-3)")
-          .addOption(TokenizerType.p50k_edit, "p50k_edit (Edit models)")
-          .addOption(TokenizerType.gpt2, "gpt2 (GPT-2)")
+          .addOption(TokenizerType.cl100k_base, "GPT-4 / GPT-3.5-turbo (OpenAI)")
+          .addOption(TokenizerType.p50k_base, "Codex / text-davinci (OpenAI)")
+          .addOption(TokenizerType.r50k_base, "GPT-3 (OpenAI)")
+          .addOption(TokenizerType.gpt2, "GPT-2 (OpenAI)")
+          .addOption(TokenizerType.llama, "Llama 1/2/3 (Meta)")
+          .addOption(TokenizerType.claude, "Claude 1/2/3/3.5 (Anthropic)")
           .setValue(this.plugin.settings.tokenizerType)
           .onChange(async (value: string) => {
             this.plugin.settings.tokenizerType = value as TokenizerType;
