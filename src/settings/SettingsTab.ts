@@ -1,6 +1,7 @@
 import { App, PluginSettingTab, Setting, ToggleComponent, TextComponent } from "obsidian";
 import type BetterWordCount from "src/main";
 import { addStatusBarSettings } from "./StatusBarSettings";
+import { TokenizerType } from "./Settings";
 
 export default class BetterWordCountSettingsTab extends PluginSettingTab {
   constructor(app: App, private plugin: BetterWordCount) {
@@ -62,6 +63,23 @@ export default class BetterWordCountSettingsTab extends PluginSettingTab {
             } else {
               this.plugin.settings.pageWords = 300;
             }
+            await this.plugin.saveSettings();
+          });
+      });
+    new Setting(containerEl)
+      .setName("Tokenizer Type")
+      .setDesc("Select the tokenizer to use for token counting. Choose the tokenizer that matches your target LLM.")
+      .addDropdown((dropdown) => {
+        dropdown
+          .addOption(TokenizerType.cl100k_base, "GPT-4 / GPT-3.5-turbo (OpenAI)")
+          .addOption(TokenizerType.p50k_base, "Codex / text-davinci (OpenAI)")
+          .addOption(TokenizerType.r50k_base, "GPT-3 (OpenAI)")
+          .addOption(TokenizerType.gpt2, "GPT-2 (OpenAI)")
+          .addOption(TokenizerType.llama, "Llama 1/2/3 (Meta)")
+          .addOption(TokenizerType.claude, "Claude 1/2/3/3.5 (Anthropic)")
+          .setValue(this.plugin.settings.tokenizerType)
+          .onChange(async (value: string) => {
+            this.plugin.settings.tokenizerType = value as TokenizerType;
             await this.plugin.saveSettings();
           });
       });

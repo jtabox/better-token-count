@@ -26,6 +26,8 @@
           return "Pages in Note"
         case MetricCounter.files:
           return "Total Notes"
+        case MetricCounter.tokens:
+          return "Tokens in Note"
       }
     } else if (metric.type === MetricType.daily) {
       switch (metric.counter) {
@@ -43,6 +45,8 @@
           return "Daily Pages"
         case MetricCounter.files:
           return "Total Notes"
+        case MetricCounter.tokens:
+          return "Daily Tokens"
       }
     } else if (metric.type === MetricType.total) {
       switch (metric.counter) {
@@ -60,6 +64,8 @@
           return "Total Pages"
         case MetricCounter.files:
           return "Total Notes"
+        case MetricCounter.tokens:
+          return "Total Tokens"
       }
     } else {
       return "Select Options"
@@ -203,6 +209,7 @@
             <option value={MetricCounter.citations}>Citations</option>
             <option value={MetricCounter.pages}>Pages</option>
             <option value={MetricCounter.files}>Files</option>
+            <option value={MetricCounter.tokens}>Tokens</option>
          </select>
         </div>
       </div>
@@ -373,6 +380,7 @@
             <option value={MetricCounter.citations}>Citations</option>
             <option value={MetricCounter.pages}>Pages</option>
             <option value={MetricCounter.files}>Files</option>
+            <option value={MetricCounter.tokens}>Tokens</option>
          </select>
         </div>
       </div>

@@ -13,12 +13,14 @@ export interface Day {
   files: number;
   footnotes: number;
   citations: number;
+  tokens: number;
   totalWords: number;
   totalCharacters: number;
   totalSentences: number;
   totalFootnotes: number;
   totalCitations: number;
   totalPages: number;
+  totalTokens: number;
 }
 
 export type ModifiedFiles = Record<string, FileStat>;
@@ -30,6 +32,7 @@ export interface FileStat {
   characters: CountDiff;
   sentences: CountDiff;
   pages: CountDiff;
+  tokens: CountDiff;
 }
 
 export interface CountDiff {
