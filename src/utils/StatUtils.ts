@@ -1,6 +1,5 @@
 import type { Vault } from "obsidian";
 import { MATCH_HTML_COMMENT, MATCH_COMMENT } from "src/constants";
-import type { TokenizerType } from "src/settings/Settings";
 import { estimateTokenCount } from "tokenx";
 
 export function getWordCount(text: string): number {
@@ -68,7 +67,7 @@ export function cleanComments(text: string): string {
   return text.replace(MATCH_COMMENT, "").replace(MATCH_HTML_COMMENT, "");
 }
 
-export function getTokenCount(text: string, tokenizerType: TokenizerType): number {
+export function getTokenCount(text: string): number {
   try {
     // Use tokenx for fast token estimation (94% accuracy)
     return estimateTokenCount(text);
