@@ -16,3 +16,7 @@ test-vault/
 *.zip
 .DS_Store
 dist/
+
+# bun
+bun.lock
+

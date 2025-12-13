@@ -27,7 +27,6 @@ export default {
     "@codemirror/gutter",
     "@codemirror/highlight",
     "@codemirror/history",
-    "@codemirror/language",
     "@codemirror/lint",
     "@codemirror/matchbrackets",
     "@codemirror/panel",
@@ -44,7 +43,10 @@ export default {
   ],
   plugins: [
     typescript(),
-    nodeResolve({ browser: true }),
+    nodeResolve({
+      browser: true,
+      exportConditions: ["svelte", "browser", "module"],
+    }),
     commonjs(),
     svelte({
       include: "src/**/*.svelte",
