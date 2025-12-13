@@ -203,7 +203,7 @@ export default class StatusBar {
       } else if (metric.counter === MetricCounter.tokens) {
         switch (metric.type) {
           case MetricType.file:
-            display = display + getTokenCount(text, this.plugin.settings.tokenizerType);
+            display = display + getTokenCount(text);
             break;
           case MetricType.daily:
             display =

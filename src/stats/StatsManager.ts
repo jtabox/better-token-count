@@ -122,7 +122,7 @@ export default class StatsManager {
     const currentCitations = getCitationCount(text);
     const currentFootnotes = getFootnoteCount(text);
     const currentPages = getPageCount(text, this.plugin.settings.pageWords);
-    const currentTokens = getTokenCount(text, this.plugin.settings.tokenizerType);
+    const currentTokens = getTokenCount(text);
 
     if (
       this.vaultStats.history.hasOwnProperty(this.today) &&
@@ -340,7 +340,7 @@ export default class StatsManager {
     for (const i in files) {
       const file = files[i];
       if (file.extension === "md") {
-        tokens += getTokenCount(await this.vault.cachedRead(file), this.plugin.settings.tokenizerType);
+        tokens += getTokenCount(await this.vault.cachedRead(file));
       }
     }
     return tokens;
