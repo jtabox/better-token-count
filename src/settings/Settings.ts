@@ -49,7 +49,7 @@ export interface BetterWordCountSettings {
   pageWords: number;
   displaySectionCounts: boolean;
   statsPath: string;
-  tokenizerType: TokenizerType;
+  tokenizerType: TokenizerType; // Kept for backwards compatibility with saved settings
 }
 
 export const DEFAULT_SETTINGS: BetterWordCountSettings = {
