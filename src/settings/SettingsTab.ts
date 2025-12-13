@@ -68,15 +68,10 @@ export default class BetterWordCountSettingsTab extends PluginSettingTab {
       });
     new Setting(containerEl)
       .setName("Tokenizer Type")
-      .setDesc("Select the tokenizer to use for token counting. Choose the tokenizer that matches your target LLM.")
+      .setDesc("Using tokenx for fast token estimation (94% accuracy, same as Cherry Studio).")
       .addDropdown((dropdown) => {
         dropdown
-          .addOption(TokenizerType.cl100k_base, "GPT-4 / GPT-3.5-turbo (OpenAI)")
-          .addOption(TokenizerType.p50k_base, "Codex / text-davinci (OpenAI)")
-          .addOption(TokenizerType.r50k_base, "GPT-3 (OpenAI)")
-          .addOption(TokenizerType.gpt2, "GPT-2 (OpenAI)")
-          .addOption(TokenizerType.llama, "Llama 1/2/3 (Meta)")
-          .addOption(TokenizerType.claude, "Claude 1/2/3/3.5 (Anthropic)")
+          .addOption(TokenizerType.tokenx, "TokenX (Fast Estimation)")
           .setValue(this.plugin.settings.tokenizerType)
           .onChange(async (value: string) => {
             this.plugin.settings.tokenizerType = value as TokenizerType;
