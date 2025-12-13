@@ -67,17 +67,8 @@ export default class BetterWordCountSettingsTab extends PluginSettingTab {
           });
       });
     new Setting(containerEl)
-      .setName("Tokenizer Type")
-      .setDesc("Using tokenx for fast token estimation (94% accuracy, same as Cherry Studio).")
-      .addDropdown((dropdown) => {
-        dropdown
-          .addOption(TokenizerType.tokenx, "TokenX (Fast Estimation)")
-          .setValue(this.plugin.settings.tokenizerType)
-          .onChange(async (value: string) => {
-            this.plugin.settings.tokenizerType = value as TokenizerType;
-            await this.plugin.saveSettings();
-          });
-      });
+      .setName("Tokenizer")
+      .setDesc("Using tokenx for fast token estimation (94% accuracy, same as Cherry Studio).");
 
     // Advanced Settings
     containerEl.createEl("h4", { text: "Advanced Settings" });
